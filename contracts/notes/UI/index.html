@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/12.2.0/stellar-sdk.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@stellar/freighter-api/build/index.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trustless Freelance Escrow | Stellar dApp</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/12.2.0/stellar-sdk.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stellar/freighter-api/build/index.min.js"></script>
 
     <style>
         :root {
             --bg-dark: #0b0c10; --bg-card: #1f2833; --text-main: #c5c6c7;
             --text-light: #ffffff; --primary: #66fcf1; --primary-hover: #45a29e;
             --border: rgba(255, 255, 255, 0.1); --success: #4caf50; --error: #f44336;
-            --font-family: 'Inter', sans-serif;
+            --warning: #ff9800; --font-family: 'Inter', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,13 +30,18 @@
         button { background-color: var(--primary); color: var(--bg-dark); border: none; padding: 10px 20px; font-size: 0.9rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: var(--primary-hover); }
         button:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        
+        .btn-warning { background-color: transparent; color: var(--warning); border: 1px solid var(--warning); }
+        .btn-warning:hover { background-color: var(--warning); color: var(--bg-dark); }
+        .btn-error { background-color: transparent; color: var(--error); border: 1px solid var(--error); }
+        .btn-error:hover { background-color: var(--error); color: var(--text-light); }
 
-        main { max-width: 1000px; margin: 0 auto; display: grid; gap: 30px; }
+        main { max-width: 1200px; margin: 0 auto; display: grid; gap: 30px; }
         .description { text-align: center; margin-bottom: 20px; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
 
         .card { background-color: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
-        .card h3 { color: var(--text-light); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .card h3 { color: var(--text-light); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 1.1rem;}
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #aaa; }
         .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--bg-dark); color: var(--text-light); }
@@ -82,23 +85,46 @@
                 <h3>1. Initialize Agreement</h3>
                 <div class="form-group">
                     <label>Freelancer Address</label>
-                    <input type="text" id="freelancer-address" placeholder="G...ABCD" autocomplete="off">
+                    <input type="text" id="freelancer-address" placeholder="G..." autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label>Payment Amount (Token)</label>
+                    <label>Arbitrator Address (Trọng tài)</label>
+                    <input type="text" id="arbitrator-address" placeholder="G..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Payment Amount (XLM)</label>
                     <input type="number" id="amount" placeholder="e.g. 1000" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Duration in Seconds (Hạn chót)</label>
+                    <input type="number" id="duration" placeholder="e.g. 604800 (7 days)" value="604800" autocomplete="off">
                 </div>
                 <button id="btn-init" style="width: 100%; margin-top: 10px;" disabled>Initialize Contract</button>
             </div>
 
             <div class="card">
-                <h3>2. Contract Actions</h3>
+                <h3>2. Normal Actions (Client & Freelancer)</h3>
                 <div class="action-buttons">
                     <button id="btn-fund" disabled>Deposit Funds (Client)</button>
                     <button id="btn-submit" disabled>Submit Work (Freelancer)</button>
                     <button id="btn-approve" disabled>Approve & Release (Client)</button>
                     <button id="btn-status" disabled>Check Contract Status</button>
                 </div>
+            </div>
+
+            <div class="card">
+                <h3>3. Dispute & Refunds</h3>
+                <div class="action-buttons">
+                    <button id="btn-refund" class="btn-warning" disabled>Claim Timeout Refund (Client)</button>
+                    <button id="btn-dispute" class="btn-error" disabled>Raise Dispute (Client/Freelancer)</button>
+                </div>
+                
+                <h3 style="margin-top: 30px; border-top: 1px solid #333; padding-top: 15px;">Arbitrator Panel</h3>
+                <div class="form-group">
+                    <label>Amount to Freelancer</label>
+                    <input type="number" id="resolve-amount" placeholder="e.g. 500" autocomplete="off">
+                </div>
+                <button id="btn-resolve" class="btn-error" style="width: 100%;" disabled>Resolve Dispute</button>
             </div>
         </section>
 
@@ -114,27 +140,30 @@
     </main>
 
     <script>
-        // --- CẤU HÌNH STELLAR & SMART CONTRACT ---
         const CONTRACT_ID = "CBBM4TIVD73F5D3TNZM3LN74HFSDPR4YNA6DXDJBFSV3YVJXEOCW7BFL";
         const RPC_URL = "https://soroban-testnet.stellar.org";
         const NETWORK_PASSPHRASE = StellarSdk.Networks.TESTNET;
         const server = new StellarSdk.SorobanRpc.Server(RPC_URL);
+        
+        const NATIVE_XLM_SAC = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
 
-        // --- DOM Elements ---
         const btnConnect = document.getElementById('btn-connect');
         const walletAddressDisplay = document.getElementById('wallet-address');
         const statusIndicator = document.getElementById('status-indicator');
         const consoleLog = document.getElementById('console');
+        
         const btnInit = document.getElementById('btn-init');
         const btnFund = document.getElementById('btn-fund');
         const btnSubmit = document.getElementById('btn-submit');
         const btnApprove = document.getElementById('btn-approve');
         const btnStatus = document.getElementById('btn-status');
+        const btnRefund = document.getElementById('btn-refund');
+        const btnDispute = document.getElementById('btn-dispute');
+        const btnResolve = document.getElementById('btn-resolve');
 
         let isConnected = false;
         let userAddress = "";
 
-        // --- HÀM TIỆN ÍCH ---
         function getTime() { return `[${new Date().toLocaleTimeString()}]`; }
 
         function appendLog(message, type = 'info') {
@@ -146,7 +175,11 @@
             consoleLog.scrollTop = consoleLog.scrollHeight;
         }
 
-        // --- 1. KẾT NỐI VÍ FREIGHTER THẬT ---
+        function toggleButtons(enabled) {
+            const buttons = [btnInit, btnFund, btnSubmit, btnApprove, btnStatus, btnRefund, btnDispute, btnResolve];
+            buttons.forEach(btn => btn.disabled = !enabled);
+        }
+
         btnConnect.addEventListener('click', async () => {
             if (!window.freighterApi) {
                 appendLog('Error: Freighter Extension not detected. Please install Freighter.', 'error');
@@ -156,26 +189,17 @@
             if (!isConnected) {
                 try {
                     appendLog('Requesting Freighter wallet access...', 'info');
-                    
-                    // Yêu cầu quyền truy cập từ ví
                     const allowed = await window.freighterApi.setAllowed();
                     if (allowed) {
                         userAddress = await window.freighterApi.requestAccess();
                         isConnected = true;
                         
-                        // Cập nhật UI
                         walletAddressDisplay.innerText = `${userAddress.substring(0, 5)}...${userAddress.substring(userAddress.length - 4)}`;
                         statusIndicator.classList.add('connected');
                         btnConnect.innerText = "Disconnect";
                         
-                        // Mở khóa các nút
-                        btnInit.disabled = false;
-                        btnFund.disabled = false;
-                        btnSubmit.disabled = false;
-                        btnApprove.disabled = false;
-                        btnStatus.disabled = false;
-
-                        appendLog(`Connected real wallet: ${userAddress}`, 'success');
+                        toggleButtons(true);
+                        appendLog(`Connected wallet: ${userAddress}`, 'success');
                     }
                 } catch (error) {
                     appendLog(`Connection failed: ${error}`, 'error');
@@ -187,26 +211,18 @@
                 statusIndicator.classList.remove('connected');
                 btnConnect.innerText = "Connect Wallet";
                 
-                btnInit.disabled = true;
-                btnFund.disabled = true;
-                btnSubmit.disabled = true;
-                btnApprove.disabled = true;
-                btnStatus.disabled = true;
+                toggleButtons(false);
                 appendLog('Wallet disconnected.', 'info');
             }
         });
 
-        // --- HÀM GỌI SMART CONTRACT CƠ BẢN (INVOKE) ---
         async function invokeContract(methodName, scValArgs = []) {
             try {
                 appendLog(`Preparing transaction for [${methodName}]...`, 'info');
                 
-                // 1. Lấy thông tin tài khoản (Sequence Number)
                 const account = await server.getAccount(userAddress);
-                
-                // 2. Dựng Transaction
                 const contract = new StellarSdk.Contract(CONTRACT_ID);
-                const fee = "1000000"; // Phí mạng lưới (Testnet)
+                const fee = "1000000"; 
                 
                 const tx = new StellarSdk.TransactionBuilder(account, {
                     fee: fee,
@@ -216,83 +232,74 @@
                 .setTimeout(30)
                 .build();
 
-                // 3. Simulate (Mô phỏng giao dịch trên Soroban)
-                appendLog(`Simulating transaction on network...`, 'info');
+                appendLog(`Simulating transaction...`, 'info');
                 const simulatedTx = await server.simulateTransaction(tx);
                 
                 if (simulatedTx.error) {
                     throw new Error(simulatedTx.error);
                 }
 
-                // 4. Assemble (Đóng gói giao dịch sau mô phỏng)
                 const assembledTx = StellarSdk.SorobanRpc.assembleTransaction(tx, simulatedTx);
 
-                // 5. Ký bằng ví Freighter
-                appendLog(`Please open Freighter to SIGN the transaction...`, 'info');
+                appendLog(`Please open Freighter to SIGN...`, 'info');
                 const signedXdr = await window.freighterApi.signTransaction(assembledTx.toXDR(), 'TESTNET');
                 const signedTx = StellarSdk.TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
 
-                // 6. Gửi lên Blockchain
-                appendLog(`Submitting transaction to Stellar Testnet...`, 'info');
+                appendLog(`Submitting transaction to Testnet...`, 'info');
                 const response = await server.sendTransaction(signedTx);
                 
                 if (response.status === "PENDING") {
-                    appendLog(`Transaction Hash: ${response.hash}`, 'hash');
-                    appendLog(`Processing... waiting for ledger inclusion.`, 'info');
-                    
-                    // Poll trạng thái (Rút gọn)
-                    setTimeout(() => {
-                         appendLog(`Success: Contract updated successfully!`, 'success');
-                    }, 4000);
+                    appendLog(`Tx Hash: ${response.hash}`, 'hash');
+                    appendLog(`Transaction sent! Please wait for network confirmation.`, 'success');
                 } else {
                     throw new Error(response.errorResultXdr || "Submission failed");
                 }
 
             } catch (error) {
-                appendLog(`Transaction Failed: ${error.message || error}`, 'error');
+                appendLog(`Failed: ${error.message || error}`, 'error');
             }
         }
 
-        // --- 2. GẮN SỰ KIỆN CHO CÁC NÚT (SMART CONTRACT LOGIC) ---
-
-        // Nút Init
         btnInit.addEventListener('click', async () => {
             const freelancer = document.getElementById('freelancer-address').value;
+            const arbitrator = document.getElementById('arbitrator-address').value;
             const amount = document.getElementById('amount').value;
+            const duration = document.getElementById('duration').value;
 
-            if (!freelancer || !amount) {
-                appendLog('Validation Error: Provide Freelancer address and Amount.', 'error');
+            if (!freelancer || !arbitrator || !amount || !duration) {
+                appendLog('Validation Error: Please fill all Init fields.', 'error');
                 return;
             }
 
-            // Chuyển đổi dữ liệu JS sang chuẩn XDR của Soroban
             const clientScVal = new StellarSdk.Address(userAddress).toScVal();
             const freelancerScVal = new StellarSdk.Address(freelancer).toScVal();
+            const arbitratorScVal = new StellarSdk.Address(arbitrator).toScVal();
+            const tokenScVal = new StellarSdk.Address(NATIVE_XLM_SAC).toScVal(); 
             const amountScVal = StellarSdk.nativeToScVal(Number(amount), { type: 'i128' });
+            const durationScVal = StellarSdk.nativeToScVal(Number(duration), { type: 'u64' });
 
-            // Gọi hàm init() trên Rust
-            await invokeContract("init", [clientScVal, freelancerScVal, amountScVal]);
+            await invokeContract("init", [clientScVal, freelancerScVal, arbitratorScVal, tokenScVal, amountScVal, durationScVal]);
         });
 
-        // Nút Fund Contract
-        btnFund.addEventListener('click', async () => {
-            // Tương ứng với pub fn fund_contract(env: Env, client: Address)
-            const clientScVal = new StellarSdk.Address(userAddress).toScVal();
-            await invokeContract("fund_contract", [clientScVal]);
+        btnFund.addEventListener('click', async () => await invokeContract("fund_contract", []));
+        btnSubmit.addEventListener('click', async () => await invokeContract("submit_work", []));
+        btnApprove.addEventListener('click', async () => await invokeContract("approve_and_release", []));
+        btnRefund.addEventListener('click', async () => await invokeContract("claim_timeout_refund", []));
+
+        // Đã cập nhật: Gửi địa chỉ ví của người gọi hàm vào Dispute
+        btnDispute.addEventListener('click', async () => {
+            const callerScVal = new StellarSdk.Address(userAddress).toScVal();
+            await invokeContract("raise_dispute", [callerScVal]);
         });
 
-        // Nút Submit Work
-        btnSubmit.addEventListener('click', async () => {
-            // Tương ứng với pub fn submit_work(env: Env, freelancer: Address)
-            const freelancerScVal = new StellarSdk.Address(userAddress).toScVal();
-            await invokeContract("submit_work", [freelancerScVal]);
-        });
-
-        // Nút Approve and Release
-        btnApprove.addEventListener('click', async () => {
-            // Tương ứng với pub fn approve_and_release(env: Env, client: Address)
-            const clientScVal = new StellarSdk.Address(userAddress).toScVal();
-            await invokeContract("approve_and_release", [clientScVal]);
+        btnResolve.addEventListener('click', async () => {
+            const resolveAmount = document.getElementById('resolve-amount').value;
+            if (!resolveAmount) {
+                appendLog('Validation Error: Enter amount to distribute to freelancer.', 'error');
+                return;
+            }
+            const amountScVal = StellarSdk.nativeToScVal(Number(resolveAmount), { type: 'i128' });
+            await invokeContract("resolve_dispute", [amountScVal]);
         });
 
     </script>
