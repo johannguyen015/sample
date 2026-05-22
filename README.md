@@ -116,3 +116,39 @@ Deploy the smart contract to Stellar's Soroban network and interact with it usin
 ---
 
 **Stellar Notes DApp** - Securing Your Thoughts on the Blockchain
+
+# Title
+**Trustless Freelance Escrow**
+
+# Description
+In the gig economy, "trust" is the biggest barrier between clients and freelancers. Clients fear losing upfront payments, while freelancers worry about not getting paid after delivering the work. Traditional platforms (like Upwork or Fiverr) solve this by acting as middlemen, but they charge hefty fees (up to 20%).
+
+This project is a decentralized application (dApp) built on **Stellar's Soroban smart contract platform**. It acts as an automated, trustless escrow service. The client locks the funds in the smart contract, the freelancer works with guaranteed peace of mind, and the funds are only released upon the client's approval. This creates a secure, transparent, and near-zero-fee environment for both parties.
+
+# Features
+* **Initialize Project (`init`):** Sets up the agreement, defining the client, freelancer, token type (e.g., XLM, USDC), and the payment amount.
+* **Secure Fund Locking (`fund_contract`):** The client deposits tokens into the smart contract. The funds are safely locked, signaling the freelancer to begin working.
+* **Work Submission (`submit_work`):** The freelancer updates the contract state to indicate the work is complete and pending review.
+* **Automated Release (`approve_and_release`):** Once the client is satisfied and approves, the contract automatically transfers the funds to the freelancer. No human intermediary can intercept this.
+* **Transparent Status Tracking (`get_status`):** Anyone can query the blockchain to see the exact current state of the agreement.
+
+# Contract
+**Contract ID:** `CBBM4TIVD73F5D3TNZM3LN74HFSDPR4YNA6DXDJBFSV3YVJXEOCW7BFL`
+
+**Stellar Expert Explorer Link:** https://stellar.expert/explorer/testnet/contract/CBBM4TIVD73F5D3TNZM3LN74HFSDPR4YNA6DXDJBFSV3YVJXEOCW7BFL
+
+<img width="1866" height="929" alt="image" src="https://github.com/user-attachments/assets/2c4b2510-69b9-49f2-9818-6b6c9e33c03e" />
+
+
+# Future scopes
+To evolve this proof-of-concept into a fully-fledged commercial dApp, future updates will include:
+1. **Time-based Auto-Release:** Utilizing ledger timestamps so that if a freelancer submits work and the client "ghosts" (doesn't respond within 7 days), the funds are automatically released.
+2. **Dispute Resolution System:** Introducing a third-party `Arbitrator` role to handle disagreements and fairly distribute locked funds.
+3. **Web3 Frontend Integration:** Building a React-based UI that connects directly to the Freighter wallet for seamless, click-based interactions.
+4. **Stablecoin Integration:** Defaulting to USDC or EURC on the Stellar network to avoid cryptocurrency price volatility during a project.
+
+# Profile
+* **Name:** Nguyen Ba Duy
+* **Role:** Blockchain Developer / Web3 Enthusiast (vibe code)
+* **Skills:** Rust, Smart Contract Development (Soroban)..
+* **Contact/Links:** https://github.com/johannguyen015/sample
