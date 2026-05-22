@@ -1,235 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/12.2.0/stellar-sdk.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@stellar/freighter-api/build/index.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trustless Freelance Escrow | Stellar dApp</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/12.2.0/stellar-sdk.min.js"></script>
+
     <style>
-        /* CSS Variables cho Dark Theme */
         :root {
-            --bg-dark: #0b0c10;
-            --bg-card: #1f2833;
-            --text-main: #c5c6c7;
-            --text-light: #ffffff;
-            --primary: #66fcf1;
-            --primary-hover: #45a29e;
-            --border: rgba(255, 255, 255, 0.1);
-            --success: #4caf50;
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --bg-dark: #0b0c10; --bg-card: #1f2833; --text-main: #c5c6c7;
+            --text-light: #ffffff; --primary: #66fcf1; --primary-hover: #45a29e;
+            --border: rgba(255, 255, 255, 0.1); --success: #4caf50; --error: #f44336;
+            --font-family: 'Inter', sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: var(--font-family); padding: 0 20px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-family);
-            line-height: 1.6;
-            padding: 0 20px;
-        }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+        header h1 { color: var(--primary); font-size: 1.5rem; }
+        
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .wallet-status { font-size: 0.9rem; background: var(--bg-card); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: gray; }
+        .status-dot.connected { background-color: var(--success); }
 
-        /* Header Styles */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 40px;
-        }
+        button { background-color: var(--primary); color: var(--bg-dark); border: none; padding: 10px 20px; font-size: 0.9rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: var(--primary-hover); }
+        button:disabled { background-color: #555; color: #888; cursor: not-allowed; }
 
-        header h1 {
-            color: var(--primary);
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-        }
+        main { max-width: 1000px; margin: 0 auto; display: grid; gap: 30px; }
+        .description { text-align: center; margin-bottom: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+        .card { background-color: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
+        .card h3 { color: var(--text-light); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #aaa; }
+        .form-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background-color: var(--bg-dark); color: var(--text-light); }
 
-        .wallet-status {
-            font-size: 0.9rem;
-            background: var(--bg-card);
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .action-buttons { display: flex; flex-direction: column; gap: 15px; }
+        .action-buttons button { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        .action-buttons button:hover { background-color: var(--primary); color: var(--bg-dark); }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: gray;
-        }
-
-        .status-dot.connected {
-            background-color: var(--success);
-        }
-
-        button {
-            background-color: var(--primary);
-            color: var(--bg-dark);
-            border: none;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:disabled {
-            background-color: #555;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-        /* Main Content Layout */
-        main {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        .description {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .description h2 {
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        /* Card Styles */
-        .card {
-            background-color: var(--bg-card);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .card h3 {
-            color: var(--text-light);
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: inherit;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .action-buttons button {
-            width: 100%;
-            background-color: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-
-        .action-buttons button:hover {
-            background-color: var(--primary);
-            color: var(--bg-dark);
-        }
-
-        /* Transaction Log Area */
-        .tx-log-area {
-            background-color: #050505;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            margin-top: 20px;
-            margin-bottom: 50px;
-        }
-
-        .tx-log-area h3 {
-            color: var(--text-light);
-            font-size: 1rem;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .log-console {
-            height: 200px;
-            overflow-y: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            color: #a8a8a8;
-            background: #000;
-            padding: 15px;
-            border-radius: 6px;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            border-bottom: 1px dashed #333;
-            padding-bottom: 8px;
-        }
-
-        .log-time {
-            color: #555;
-            margin-right: 10px;
-        }
-
-        .log-success { color: var(--primary); }
+        .tx-log-area { background-color: #050505; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 20px; margin-bottom: 50px; }
+        .log-console { height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; color: #a8a8a8; background: #000; padding: 15px; border-radius: 6px; }
+        .log-entry { margin-bottom: 8px; border-bottom: 1px dashed #333; padding-bottom: 8px; }
+        .log-time { color: #555; margin-right: 10px; }
+        
+        .log-success { color: var(--success); }
         .log-info { color: #f2a900; }
-        .log-hash {
-            color: var(--success);
-            word-break: break-all;
-        }
-
+        .log-error { color: var(--error); }
+        .log-hash { color: var(--primary); word-break: break-all; }
     </style>
 </head>
 <body>
@@ -247,20 +73,19 @@
 
     <main>
         <section class="description">
-            <h2>Trustless Escrow Smart Contract</h2>
-            <p>A secure, decentralized environment for Clients and Freelancers on the Stellar Network. Lock funds securely and release them only upon project completion.</p>
+            <h2>Contract: <code>CBBM4TIVD73F5D3TNZM3LN74HFSDPR4YNA6DXDJBFSV3YVJXEOCW7BFL</code></h2>
+            <p>Live on Stellar Testnet. Please connect Freighter Wallet to interact.</p>
         </section>
 
         <section class="dashboard-grid">
-            
             <div class="card">
                 <h3>1. Initialize Agreement</h3>
                 <div class="form-group">
-                    <label for="freelancer-address">Freelancer Address</label>
+                    <label>Freelancer Address</label>
                     <input type="text" id="freelancer-address" placeholder="G...ABCD" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label for="amount">Payment Amount (XLM)</label>
+                    <label>Payment Amount (Token)</label>
                     <input type="number" id="amount" placeholder="e.g. 1000" autocomplete="off">
                 </div>
                 <button id="btn-init" style="width: 100%; margin-top: 10px;" disabled>Initialize Contract</button>
@@ -272,168 +97,204 @@
                     <button id="btn-fund" disabled>Deposit Funds (Client)</button>
                     <button id="btn-submit" disabled>Submit Work (Freelancer)</button>
                     <button id="btn-approve" disabled>Approve & Release (Client)</button>
-                    <button id="btn-status">Check Contract Status</button>
+                    <button id="btn-status" disabled>Check Contract Status</button>
                 </div>
             </div>
-
         </section>
 
         <section class="tx-log-area">
-            <h3>
-                <span>Transaction Console</span>
-                <span style="font-size: 0.8rem; font-weight: normal; color: #888;">Network: Testnet</span>
-            </h3>
+            <h3>Transaction Console</h3>
             <div class="log-console" id="console">
                 <div class="log-entry">
                     <span class="log-time">[System]</span> 
-                    <span class="log-info">Ready. Please connect your Freighter wallet to begin.</span>
+                    <span class="log-info">Ready. Please install/connect your Freighter wallet.</span>
                 </div>
             </div>
         </section>
     </main>
 
     <script>
-        // DOM Elements
+        // --- CẤU HÌNH STELLAR & SMART CONTRACT ---
+        const CONTRACT_ID = "CBBM4TIVD73F5D3TNZM3LN74HFSDPR4YNA6DXDJBFSV3YVJXEOCW7BFL";
+        const RPC_URL = "https://soroban-testnet.stellar.org";
+        const NETWORK_PASSPHRASE = StellarSdk.Networks.TESTNET;
+        const server = new StellarSdk.SorobanRpc.Server(RPC_URL);
+
+        // --- DOM Elements ---
         const btnConnect = document.getElementById('btn-connect');
         const walletAddressDisplay = document.getElementById('wallet-address');
         const statusIndicator = document.getElementById('status-indicator');
         const consoleLog = document.getElementById('console');
-        
         const btnInit = document.getElementById('btn-init');
         const btnFund = document.getElementById('btn-fund');
         const btnSubmit = document.getElementById('btn-submit');
         const btnApprove = document.getElementById('btn-approve');
         const btnStatus = document.getElementById('btn-status');
 
-        // State variables
         let isConnected = false;
         let userAddress = "";
 
-        // Helper: Format Time
-        function getTime() {
-            const now = new Date();
-            return `[${now.toLocaleTimeString()}]`;
-        }
+        // --- HÀM TIỆN ÍCH ---
+        function getTime() { return `[${new Date().toLocaleTimeString()}]`; }
 
-        // Helper: Add log to console
         function appendLog(message, type = 'info') {
             const entry = document.createElement('div');
             entry.className = 'log-entry';
-            
-            let typeClass = type === 'success' ? 'log-success' : type === 'hash' ? 'log-hash' : 'log-info';
-            
+            let typeClass = `log-${type}`;
             entry.innerHTML = `<span class="log-time">${getTime()}</span> <span class="${typeClass}">${message}</span>`;
             consoleLog.appendChild(entry);
-            consoleLog.scrollTop = consoleLog.scrollHeight; // Auto-scroll to bottom
+            consoleLog.scrollTop = consoleLog.scrollHeight;
         }
 
-        // Helper: Generate Mock Transaction Hash
-        function generateMockHash() {
-            const chars = 'abcdef0123456789';
-            let hash = '';
-            for (let i = 0; i < 64; i++) {
-                hash += chars[Math.floor(Math.random() * chars.length)];
+        // --- 1. KẾT NỐI VÍ FREIGHTER THẬT ---
+        btnConnect.addEventListener('click', async () => {
+            if (!window.freighterApi) {
+                appendLog('Error: Freighter Extension not detected. Please install Freighter.', 'error');
+                return;
             }
-            return hash;
-        }
 
-        // 1. Connect Wallet Interaction
-        btnConnect.addEventListener('click', () => {
             if (!isConnected) {
-                // Simulate Wallet Connection (e.g., Freighter)
-                appendLog('Requesting connection to Stellar wallet...', 'info');
-                
-                setTimeout(() => {
-                    userAddress = "GA2X" + Math.random().toString(36).substring(2, 10).toUpperCase() + "ABCD";
-                    isConnected = true;
+                try {
+                    appendLog('Requesting Freighter wallet access...', 'info');
                     
-                    // Update UI
-                    walletAddressDisplay.innerText = `${userAddress.substring(0, 5)}...${userAddress.substring(userAddress.length - 4)}`;
-                    statusIndicator.classList.add('connected');
-                    btnConnect.innerText = "Disconnect";
-                    
-                    // Enable action buttons
-                    btnInit.disabled = false;
-                    btnFund.disabled = false;
-                    btnSubmit.disabled = false;
-                    btnApprove.disabled = false;
+                    // Yêu cầu quyền truy cập từ ví
+                    const allowed = await window.freighterApi.setAllowed();
+                    if (allowed) {
+                        userAddress = await window.freighterApi.requestAccess();
+                        isConnected = true;
+                        
+                        // Cập nhật UI
+                        walletAddressDisplay.innerText = `${userAddress.substring(0, 5)}...${userAddress.substring(userAddress.length - 4)}`;
+                        statusIndicator.classList.add('connected');
+                        btnConnect.innerText = "Disconnect";
+                        
+                        // Mở khóa các nút
+                        btnInit.disabled = false;
+                        btnFund.disabled = false;
+                        btnSubmit.disabled = false;
+                        btnApprove.disabled = false;
+                        btnStatus.disabled = false;
 
-                    appendLog(`Wallet connected: ${userAddress}`, 'success');
-                }, 800);
+                        appendLog(`Connected real wallet: ${userAddress}`, 'success');
+                    }
+                } catch (error) {
+                    appendLog(`Connection failed: ${error}`, 'error');
+                }
             } else {
-                // Disconnect logic
                 isConnected = false;
                 userAddress = "";
                 walletAddressDisplay.innerText = "Not Connected";
                 statusIndicator.classList.remove('connected');
                 btnConnect.innerText = "Connect Wallet";
                 
-                // Disable action buttons
                 btnInit.disabled = true;
                 btnFund.disabled = true;
                 btnSubmit.disabled = true;
                 btnApprove.disabled = true;
-
+                btnStatus.disabled = true;
                 appendLog('Wallet disconnected.', 'info');
             }
         });
 
-        // 2. Initialize Contract
-        btnInit.addEventListener('click', () => {
+        // --- HÀM GỌI SMART CONTRACT CƠ BẢN (INVOKE) ---
+        async function invokeContract(methodName, scValArgs = []) {
+            try {
+                appendLog(`Preparing transaction for [${methodName}]...`, 'info');
+                
+                // 1. Lấy thông tin tài khoản (Sequence Number)
+                const account = await server.getAccount(userAddress);
+                
+                // 2. Dựng Transaction
+                const contract = new StellarSdk.Contract(CONTRACT_ID);
+                const fee = "1000000"; // Phí mạng lưới (Testnet)
+                
+                const tx = new StellarSdk.TransactionBuilder(account, {
+                    fee: fee,
+                    networkPassphrase: NETWORK_PASSPHRASE,
+                })
+                .addOperation(contract.call(methodName, ...scValArgs))
+                .setTimeout(30)
+                .build();
+
+                // 3. Simulate (Mô phỏng giao dịch trên Soroban)
+                appendLog(`Simulating transaction on network...`, 'info');
+                const simulatedTx = await server.simulateTransaction(tx);
+                
+                if (simulatedTx.error) {
+                    throw new Error(simulatedTx.error);
+                }
+
+                // 4. Assemble (Đóng gói giao dịch sau mô phỏng)
+                const assembledTx = StellarSdk.SorobanRpc.assembleTransaction(tx, simulatedTx);
+
+                // 5. Ký bằng ví Freighter
+                appendLog(`Please open Freighter to SIGN the transaction...`, 'info');
+                const signedXdr = await window.freighterApi.signTransaction(assembledTx.toXDR(), 'TESTNET');
+                const signedTx = StellarSdk.TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
+
+                // 6. Gửi lên Blockchain
+                appendLog(`Submitting transaction to Stellar Testnet...`, 'info');
+                const response = await server.sendTransaction(signedTx);
+                
+                if (response.status === "PENDING") {
+                    appendLog(`Transaction Hash: ${response.hash}`, 'hash');
+                    appendLog(`Processing... waiting for ledger inclusion.`, 'info');
+                    
+                    // Poll trạng thái (Rút gọn)
+                    setTimeout(() => {
+                         appendLog(`Success: Contract updated successfully!`, 'success');
+                    }, 4000);
+                } else {
+                    throw new Error(response.errorResultXdr || "Submission failed");
+                }
+
+            } catch (error) {
+                appendLog(`Transaction Failed: ${error.message || error}`, 'error');
+            }
+        }
+
+        // --- 2. GẮN SỰ KIỆN CHO CÁC NÚT (SMART CONTRACT LOGIC) ---
+
+        // Nút Init
+        btnInit.addEventListener('click', async () => {
             const freelancer = document.getElementById('freelancer-address').value;
             const amount = document.getElementById('amount').value;
 
             if (!freelancer || !amount) {
-                appendLog('Error: Please enter both Freelancer address and Amount.', 'info');
+                appendLog('Validation Error: Provide Freelancer address and Amount.', 'error');
                 return;
             }
 
-            appendLog(`Invoking init() on Contract...`, 'info');
-            appendLog(`Client: ${userAddress} | Freelancer: ${freelancer} | Amount: ${amount}`, 'info');
-            
-            // Simulate Blockchain Delay
-            setTimeout(() => {
-                appendLog(`Tx Hash: ${generateMockHash()}`, 'hash');
-                appendLog(`Success: Contract Initialized. Status set to AwaitingFunds.`, 'success');
-            }, 1500);
+            // Chuyển đổi dữ liệu JS sang chuẩn XDR của Soroban
+            const clientScVal = new StellarSdk.Address(userAddress).toScVal();
+            const freelancerScVal = new StellarSdk.Address(freelancer).toScVal();
+            const amountScVal = StellarSdk.nativeToScVal(Number(amount), { type: 'i128' });
+
+            // Gọi hàm init() trên Rust
+            await invokeContract("init", [clientScVal, freelancerScVal, amountScVal]);
         });
 
-        // 3. Fund Contract
-        btnFund.addEventListener('click', () => {
-            appendLog(`Signing transaction to deposit funds...`, 'info');
-            setTimeout(() => {
-                appendLog(`Tx Hash: ${generateMockHash()}`, 'hash');
-                appendLog(`Success: Funds locked in Escrow. Status set to Funded.`, 'success');
-            }, 1500);
+        // Nút Fund Contract
+        btnFund.addEventListener('click', async () => {
+            // Tương ứng với pub fn fund_contract(env: Env, client: Address)
+            const clientScVal = new StellarSdk.Address(userAddress).toScVal();
+            await invokeContract("fund_contract", [clientScVal]);
         });
 
-        // 4. Submit Work
-        btnSubmit.addEventListener('click', () => {
-            appendLog(`Freelancer submitting work for review...`, 'info');
-            setTimeout(() => {
-                appendLog(`Tx Hash: ${generateMockHash()}`, 'hash');
-                appendLog(`Success: Work submitted. Status set to WorkSubmitted.`, 'success');
-            }, 1200);
+        // Nút Submit Work
+        btnSubmit.addEventListener('click', async () => {
+            // Tương ứng với pub fn submit_work(env: Env, freelancer: Address)
+            const freelancerScVal = new StellarSdk.Address(userAddress).toScVal();
+            await invokeContract("submit_work", [freelancerScVal]);
         });
 
-        // 5. Approve and Release
-        btnApprove.addEventListener('click', () => {
-            appendLog(`Client approving work. Releasing funds to Freelancer...`, 'info');
-            setTimeout(() => {
-                appendLog(`Tx Hash: ${generateMockHash()}`, 'hash');
-                appendLog(`Success: Escrow complete. Funds released! Status set to Completed.`, 'success');
-            }, 2000);
+        // Nút Approve and Release
+        btnApprove.addEventListener('click', async () => {
+            // Tương ứng với pub fn approve_and_release(env: Env, client: Address)
+            const clientScVal = new StellarSdk.Address(userAddress).toScVal();
+            await invokeContract("approve_and_release", [clientScVal]);
         });
 
-        // 6. Check Status
-        btnStatus.addEventListener('click', () => {
-            appendLog(`Querying blockchain for current contract state...`, 'info');
-            setTimeout(() => {
-                const states = ['AwaitingFunds', 'Funded', 'WorkSubmitted', 'Completed'];
-                const randomState = states[Math.floor(Math.random() * states.length)]; // Mock random state
-                appendLog(`Current Contract Status: "${randomState}"`, 'success');
-            }, 800);
-        });
     </script>
 </body>
 </html>

@@ -1,0 +1,15 @@
+C:\Users\ASUS Vivobook\Desktop\new_repo\sample\target\debug\deps\stellar_strkey-47fec2c073774e97.d: C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\lib.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\convert.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\crc.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\ed25519.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\error.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\strkey.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\typ.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\version.rs
+
+C:\Users\ASUS Vivobook\Desktop\new_repo\sample\target\debug\deps\libstellar_strkey-47fec2c073774e97.rmeta: C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\lib.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\convert.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\crc.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\ed25519.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\error.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\strkey.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\typ.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\version.rs
+
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\lib.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\convert.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\crc.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\ed25519.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\error.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\strkey.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\typ.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\stellar-strkey-0.0.16\src\version.rs:
+
+# env-dep:CARGO_PKG_VERSION=0.0.16
+# env-dep:GIT_REVISION=9c0cd13dfda94a17b7a58498905016f2f31c7c88

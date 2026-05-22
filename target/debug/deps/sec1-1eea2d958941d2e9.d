@@ -1,0 +1,11 @@
+C:\Users\ASUS Vivobook\Desktop\new_repo\sample\target\debug\deps\sec1-1eea2d958941d2e9.d: C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\lib.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\point.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\error.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\parameters.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\private_key.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\traits.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\../README.md
+
+C:\Users\ASUS Vivobook\Desktop\new_repo\sample\target\debug\deps\libsec1-1eea2d958941d2e9.rmeta: C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\lib.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\point.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\error.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\parameters.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\private_key.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\traits.rs C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\../README.md
+
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\lib.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\point.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\error.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\parameters.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\private_key.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\traits.rs:
+C:\Users\ASUS\ Vivobook\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\sec1-0.7.3\src\../README.md:
